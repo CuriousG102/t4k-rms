@@ -1,9 +1,14 @@
 from django.contrib import admin
 from fitness.models import Ride
 
+# Admin action to mass-approve rides
+def approve_ride(modeladmin, request, queryset):
+    queryset.update(ride_approved = True)
+# Give it a nice name
+approve_ride.short_description = "Mark selected rides as approved"
+
 # Settings for ride admin
 class RideAdmin(admin.ModelAdmin):
-
     # Fields to list
     list_display = ('user', 'date', 'duration', 'miles', 'buddies', 'time_logged', 'ride_approved')
     # Fields to allow filtering by
@@ -12,6 +17,8 @@ class RideAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name')
     # Fields to order by
     ordering = ('-time_logged', '-date', 'miles', 'duration')
-
+    # Add the action
+    actions = [approve_ride]
+    
 # Add rides to admin panel
 admin.site.register(Ride, RideAdmin)
