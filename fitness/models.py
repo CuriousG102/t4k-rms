@@ -14,6 +14,7 @@ class Ride(models.Model):
     duration = DurationField('time to complete ride', help_text = 'HH:MM:SS format')
     comments = models.TextField('comments')
     time_logged = models.DateTimeField('date logged', auto_now_add = True, blank = True, null = True)
+    ride_approved = models.BooleanField('approved', default = False)
 
     # Method to create a new ride
     def log(cls, user, date, buddies, miles, pace, duration, comments):
@@ -51,3 +52,7 @@ class Ride(models.Model):
     def get_time_logged(self):
         # Returns the time the ride was logged at
         return self.time_logged
+
+    def get_ride_approved(self):
+        # Returns whether or not that the ride was approved
+        return self.ride_approved
