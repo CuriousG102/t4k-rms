@@ -8,10 +8,10 @@ class Ride(models.Model):
     user = models.ForeignKey('riders.Teammate', verbose_name = 'teammate')
     date = models.DateField('date', help_text = 'Date format: YYYY-MM-DD')
     # TODO what if we made this a list of foreign keys for other riders?
-    buddies = models.CharField('ride buddies', max_length = 300)
-    miles = models.DecimalField('miles ridden', max_digits = 5, decimal_places = 2)
+    buddies = models.CharField('buddies', max_length = 300)
+    miles = models.DecimalField('miles', max_digits = 5, decimal_places = 2)
     pace = models.DecimalField('average pace', max_digits = 3, decimal_places = 1)
-    duration = DurationField('time to complete ride', help_text = 'HH:MM:SS format')
+    duration = DurationField('completion time', help_text = 'HH:MM:SS format')
     comments = models.TextField('comments')
     time_logged = models.DateTimeField('date logged', auto_now_add = True, blank = True, null = True)
     ride_approved = models.BooleanField('approved', default = False)
