@@ -167,19 +167,19 @@ def contest_winners(request):
 	# get all teammates
 	teammates = Teammate.objects.all()
 	# make a "best" dictionary for comparison purposes. Values are arrays, where the rider with the best performance in that category is stored in index 0 and the rider with the metric for that performance is stored in index 1
-	best = {"""'time':[None, 0],""" 'miles':[None, 0], 'avg_speed':[None, 0.0], 'improvement':[None, 0.0]}
+	best = {'miles':[None, 0.0], 'avg_speed':[None, 0.0], 'improvement':[None, 0.0]}
 	# I define greatest improvement as a fraction. The fraction is (average speed this week)/(average speed overall). Greatest improvement's definition is subject to change.
 
 	for teammate in teammates:
 		# get a datetime representing 11:59:59 of the most recent Monday
 		currentTime = datetime.today()
-		mondayTime = currenTime - timedelta(days = currentTime.weekday())
+		mondayTime = currentTime - timedelta(days = currentTime.weekday())
 		mondayTime = mondayTime.replace(hour = 23, minute = 59, second = 59, microsecond = 0)
 		# get all rides for that teammate between mondayTime and 7 days earlier
 		begin = mondayTime - timedelta(days = 7)
 		end = mondayTime
 		rides = Ride.objects.filter(date__range=[begin, end])
-		rides = rides.filter(teammate__email = teammate.get_email())
+		rides = rides.filter(user__email = teammate.get_email())
 
 		# find the total time that the rides took
 		#duration field is driving me FUCKING NUTS right now so I'm going to take care of this part later
@@ -188,18 +188,21 @@ def contest_winners(request):
 		totalMiles = rides.aggregate(Sum('miles'))['miles__sum']
 
 		# find the avg_speed of all the rides for the week
-		avgSpeed = rides.aggregate(Avg('pace'))['miles__avg']
+		avgSpeed = rides.aggregate(Avg('pace'))['pace__avg']
 
 		# find the improvement ratio
-		rides = Ride.objects.filter(teammate__email = teammate.get_email())
+		rides = Ride.objects.filter(user__email = teammate.get_email())
 		overallAvgSpeed = rides.aggregate(Avg('pace'))['pace__avg']
-		improvementRatio = avgSpeed/overallAvgSpeed
+		try:
+			improvementRatio = avgSpeed/overallAvgSpeed
+		except: # rider has no rides
+			improvementRatio = 0
 
 		#compare the values of totalTime, totalMiles, avgSpeed, and improvementRatio for the teammate to those that have been the best so far among their teammates. If they are the best, replace the value for the key they are being compared to with their own name
 		
-		if best['time'][0] == None:
-			"""best['time'][0] = teammate
-			best['time'][1] = totalTime"""
+		if best['miles'][0] == None:
+			#best['time'][0] = teammate
+			#best['time'][1] = totalTime
 			best['miles'][0] = teammate
 			best['miles'][1] = totalMiles
 			best['avg_speed'][0] = teammate
@@ -207,9 +210,9 @@ def contest_winners(request):
 			best['improvement'][0] = teammate
 			best['improvement'][1] = improvementRatio
 		else:
-			"""if totalTime > best['time'][1]: # this teammate is the best in totalTime
-				best['time'][0] = teammate
-				best['time'][1] = totalTime"""
+			#if totalTime > best['time'][1]: # this teammate is the best in totalTime
+			#	best['time'][0] = teammate
+			#	best['time'][1] = totalTime
 			if totalMiles > best['miles'][1]:
 				best['miles'][0] = teammate
 				best['miles'][1] = totalMiles
@@ -220,7 +223,7 @@ def contest_winners(request):
 				best['improvement'][0] = teammate
 				best['improvement'][1] = improvementRatio
 
-	context = {"""'time':best['time'][0],""" 'miles':best['miles'][0], 'avg_speed':best['avg_speed'][0], 'improvement':best['improvement'][0]}
+	context = {'miles':best['miles'][0], 'avg_speed':best['avg_speed'][0], 'improvement':best['improvement'][0]}
 
 	return render(request, 'dashboard/contest_winners.html', context)
 
