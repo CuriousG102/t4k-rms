@@ -116,3 +116,9 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# Settings for media. Dependent on server configuration, so someone with server access
+# needs to make the final settings. Set to this for production
+
+#if DEBUG: # if this is not a production environment 
+    

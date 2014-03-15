@@ -197,12 +197,12 @@ def contest_winners(request):
         avgSpeed = rides.aggregate(Avg('pace'))['pace__avg']
 
         # find the improvement ratio
-        rides = Ride.objects.filter(user__email = teammate.get_email())
+        rides = teammate.ride_set
         overallAvgSpeed = rides.aggregate(Avg('pace'))['pace__avg']
-        try:
-            improvementRatio = avgSpeed/overallAvgSpeed
-        except: # rider has no rides
+        if overallAvgSpeed == 0:
             improvementRatio = 0
+        else:
+            improvementRatio = avgSpeed/overallAvgSpeed
 
         #compare the values of totalTime, totalMiles, avgSpeed, and improvementRatio for the teammate to those that have been the best so far among their teammates. If they are the best, replace the value for the key they are being compared to with their own name
         
@@ -224,6 +224,3 @@ def contest_winners(request):
     	       'improvement':best['improvement'][0], 'improvementness':best['improvement'][1]}
 
     return render(request, 'dashboard/contest_winners.html', context)
-
-
-
