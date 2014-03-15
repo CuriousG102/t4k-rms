@@ -11,4 +11,4 @@ env:
   - DJANGO=1.6.2
 # command to run tests
 script:
-  - python test.py
+  - python manage.py test
