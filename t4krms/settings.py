@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'riders',
     'fitness',
     'dashboard',
+    'events',
 )
 
 MIDDLEWARE_CLASSES = (
