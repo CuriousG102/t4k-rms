@@ -8,7 +8,10 @@ install:
 # Django env
 env:
   - DJANGO=1.6.1
-  - DJANGO=1.6.2
 # command to run tests
 script:
+<<<<<<< HEAD
   - python manage.py test
+=======
+  - python manage.py test
+>>>>>>> upstream/master
